@@ -1,27 +1,45 @@
 from math import log10
+from typing import List, Tuple
 
 # GAME PARAMETERS
 BOARD_WIDTH = 3
 BOARD_HEIGHT = 3
-BOARD_WIN_SIZE = 3  # Number of consecutive (row/col/diag) symbols to align to win
+BOARD_WIN_SIZE = 3  # Number of consecutive (row / column / diagonal) symbols to align to win
 PLAYERS = ['O', 'X']
 
-def clear_output():
-    pass
+# Type alias
+Board = List[str]
 
-def init_board(width=BOARD_WIDTH, height=BOARD_HEIGHT):
-    '''
-    Initializes a board list with empty cells
-    '''
+
+def clear_output() -> None:
+    """
+    Clears output.
+
+    Does nothing here, replaces Jupyter notebook's cleat_output() to maintain code as is.
+    """
+
+
+def init_board(width: int = BOARD_WIDTH, height: int = BOARD_HEIGHT) -> Board:
+    """
+    Initializes a new board with empty cells
+
+    :param width: Board width
+    :param height: Board height
+    :return: Game board with given dimensions
+    """
     return [' '] * (width * height)
 
 
-def display(board, width=BOARD_WIDTH, height=BOARD_HEIGHT):
-    '''
-    Display the board with cell numbers counted from 1 = top left to 9 = bottom left.
-    '''
+def display(board: Board, width: int = BOARD_WIDTH, height: int = BOARD_HEIGHT) -> None:
+    """
+    Display the board with cell numbers counted from 1 = top left to (board size) = bottom left.
+
+    :param board: Board to display
+    :param width: Board width
+    :param height: Board height
+    """
     idx_pad = 1 + int(log10(width * height))
-    row_sep = '\n' + '-+-'.join(['-' * (3 + idx_pad) for i in range(0, width)]) + '\n'
+    row_sep = '\n' + '-+-'.join(['-' * (3 + idx_pad)] * width) + '\n'
 
     rows = []
     index = 1
@@ -39,17 +57,22 @@ def display(board, width=BOARD_WIDTH, height=BOARD_HEIGHT):
     return None
 
 
-def get_player_choice(board, player):
-    '''
-    Ask for player choice and check its validity.
-    Payer must give a number between 1 and board size
-    '''
+def get_player_choice(board: Board, player: str) -> int:
+    """
+    Ask the player to choose a cell number in given grid, and retries until the choice is valid and available.
 
-    def is_valid(choice):
-        return choice.isdigit() and 1 <= int(choice) <= len(board)
+    Payer must give a number between 1 and board size, and corresponding to an empty cell
 
-    def is_available(choice):
-        return board[int(choice) - 1] == ' '
+    :param board: Game board where an empty cell must be chosen
+    :param player: Player marker
+    :return: Cell number chosen by the player
+    """
+
+    def is_valid(player_choice):
+        return player_choice.isdigit() and 1 <= int(player_choice) <= len(board)
+
+    def is_available(player_choice):
+        return board[int(player_choice) - 1] == ' '
 
     choice = 'wrong'
 
@@ -63,46 +86,81 @@ def get_player_choice(board, player):
     return int(choice)
 
 
-def place_choice(board, cell, player):
-    '''
+def place_choice(board: Board, cell: int, player: str) -> None:
+    """
     Place given player's choice on board
-    cell is cell number as asked, 1 = top left, (board size) = bottom right
-    '''
+
+    :param board: Game board
+    :param cell: Cell number (1 = top left, board size = bottom right)
+    :param player: Player marker
+    """
     if not 1 <= cell <= len(board):
         return None
 
     board[cell - 1] = player
-    return None
 
 
-def get_xy(cell, width=BOARD_WIDTH, height=BOARD_HEIGHT):
-    '''
-    Get (x, y) coordinates from a cell index
-    '''
+def get_xy(cell: int, width: int = BOARD_WIDTH) -> Tuple[int, int]:
+    """
+    Get x,y coordinates for given cell index
+
+    Does not check correctness or out of board things
+
+    :param cell: Cell index in list (0 based)
+    :param width: Board width
+    :return: Corresponding x, y coordinates
+    """
     x = (cell % width) + 1
     y = (cell // width) + 1
-    return (x, y)
+    return x, y
 
 
-def get_idx(x, y, width=BOARD_WIDTH, height=BOARD_HEIGHT):
-    '''
+def get_idx(x: int, y: int, width: int = BOARD_WIDTH) -> int:
+    """
     Get a cell index from (x, y) coordinates
-    '''
+
+    Does not check correctness or out of board things
+
+    :param x: Column number (1 based)
+    :param y: Row number (1 based)
+    :param width: Board width
+    :return: Cell index (0 based)
+    """
     return (x - 1) + (y - 1) * width
 
 
-def has_idx(player, board, idx):
-    '''
+def has_idx(player: str, board: Board, idx: int) -> bool:
+    """
     Check if player has marked cell index on bard
-    Return True if it has, False if not or if asked index is out of board
-    '''
+    
+    :param player: Player marker
+    :param board: Game board
+    :param idx: Cell index (0 based)
+    :return: True if player has marked corresponding cell
+    or False if not or if index is out of board
+    """
     return 0 <= idx < len(board) and board[idx] == player
 
 
-def check_cells(player, board, idx, add_x=0, add_y=0, nb_marks=BOARD_WIN_SIZE, width=BOARD_WIDTH, height=BOARD_HEIGHT):
-    '''
+def check_cells(player: str, board: Board, idx: int,
+                add_x: int = 0, add_y: int = 0, nb_marks: int = BOARD_WIN_SIZE,
+                width: int = BOARD_WIDTH,
+                height: int = BOARD_HEIGHT
+                ) -> bool:
+    """
     Checks if player marked cells on given index, into add_x / add_y direction, up to nb_marks
-    '''
+    
+    :param player: Player marker
+    :param board: Game board
+    :param idx: Starting cell index (0 based)
+    :param add_x: offset to add to x coordinate
+    :param add_y: offset to add to y coordinate
+    :param nb_marks: number of markers to find to return True
+    :param width: Board width
+    :param height: Board height
+    :return: True if player has marked nb_marks consecutive cells in board in any direction starting from cell index
+    False otherwise
+    """
     if nb_marks == 0:
         return True
 
@@ -116,17 +174,23 @@ def check_cells(player, board, idx, add_x=0, add_y=0, nb_marks=BOARD_WIN_SIZE, w
     return has_idx(player, board, idx) and check_cells(player, board, next_idx, add_x, add_y, nb_marks - 1)
 
 
-def check_win(player, board, win_size=BOARD_WIN_SIZE, width=BOARD_WIDTH, height=BOARD_HEIGHT):
-    '''
-    Check for player victory: win_size consecutive marks on same line, column or diagonal
-    '''
-    if not player in board:
+def check_win(player: str, board: Board, win_size: int = BOARD_WIN_SIZE) -> bool:
+    """
+    Check for player victory in given board
+    
+    :param player: Player marker
+    :param board: Game board
+    :param win_size: Number of consecutive cells to mark to win the game
+    :return: True if player has marked enough consecutive cells. False otherwise
+    """
+    if player not in board:
         return False
 
     index = 0
     for cell in board:
         if cell == player:
-            if (check_cells(player, board, index, add_x=1, nb_marks=win_size)
+            if (
+                    check_cells(player, board, index, add_x=1, nb_marks=win_size)
                     or check_cells(player, board, index, add_x=1, add_y=1, nb_marks=win_size)
                     or check_cells(player, board, index, add_y=1, nb_marks=win_size)
                     or check_cells(player, board, index, add_x=-1, add_y=1, nb_marks=win_size)
@@ -136,21 +200,38 @@ def check_win(player, board, win_size=BOARD_WIN_SIZE, width=BOARD_WIDTH, height=
     return False
 
 
-def next_player(player, players):
+def next_player(player: str, players: List[str]) -> str:
+    """
+    Get next playing player marker, rolling on players list
+
+    :param player: Current player marker
+    :param players: List of players
+    :return: Next player marker
+    """
     idx = players.index(player) + 1
     if idx > len(players) - 1:
         idx = 0
     return players[idx]
 
 
-def is_board_full(board):
+def is_board_full(board: Board) -> bool:
+    """
+    Checks whether board is full, i.e. no more marker can be added.
+
+    :param board: Game board
+    :return: True if no more marker can be added. False otherwise
+    """
     for c in board:
         if c == ' ':
             return False
     return True
 
 
-def tictactoe():
+def tictactoe() -> None:
+    """
+    Starts a tic-tac-toe game
+    """
+    global PLAYERS
     current_player = PLAYERS[0]
     player_won = False
 
