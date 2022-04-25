@@ -84,7 +84,7 @@ class Board:
         :param add_x: Offset to add to x coordinate
         :param add_y: Offset to add to y coordinate
         :param nb_marks: Number of player markers to find to return true
-        :return: True if player has marked nb_marks consecutive cells on board in given direction starting from cell position
+        :return: True if player has marked nb_marks consecutive cells on board in given direction starting from cell
         False otherwise
         """
         if nb_marks == 0:
@@ -92,3 +92,27 @@ class Board:
 
         next_cell = self.next_cell(cell, add_x, add_y)
         return self.has_mark_at(cell, player) and self.check_cells(next_cell, player, add_x, add_y, nb_marks - 1)
+
+    def check_victory(self, player: str, nb_marks: int) -> bool:
+        """
+        Check if given player has marked enough adjacent markers on board.
+
+        :param player: Player marker to look for
+        :param nb_marks: Number of adjacent marks to het a victory
+        :return: True if given player has marked enough adjacent marks on board. False otherwise
+        """
+        if player not in self.cells:
+            return False
+
+        index = 1
+        for cell in self.cells:
+            if cell == player:
+                if (
+                        self.check_cells(index, player, 1, 0, nb_marks)
+                        or self.check_cells(index, player, 1, 1, nb_marks)
+                        or self.check_cells(index, player, 0, 1, nb_marks)
+                        or self.check_cells(index, player, -1, 1, nb_marks)
+                ):
+                    return True
+            index += 1
+        return False

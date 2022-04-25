@@ -245,3 +245,29 @@ class TestCheckCells:
     @pytest.mark.parametrize('add_x, add_y, expected', [(1, 0, False), (1, 1, False), (0, 1, False), (-1, 1, True)])
     def test_winning_down_left(self, board_winning_forward_diagonal, add_x, add_y, expected):
         assert board_winning_forward_diagonal.check_cells(3, 'X', add_x, add_y, nb_marks=3) is expected
+
+
+class TestCheckVictory:
+
+    @pytest.mark.parametrize('board_fixture, player, expected', [
+        ('board_empty', 'X', False), ('board_empty', 'O', False),
+        ('board_draw', 'X', False), ('board_draw', 'O', False),
+        ('board_partial_horizontal', 'X', False), ('board_partial_horizontal', 'O', False),
+        ('board_winning_horizontal', 'X', True), ('board_winning_horizontal', 'O', False),
+        ('board_partial_vertical', 'X', False), ('board_partial_vertical', 'O', False),
+        ('board_winning_vertical', 'X', True), ('board_winning_vertical', 'O', False),
+        ('board_partial_backward_diagonal', 'X', False), ('board_partial_backward_diagonal', 'O', False),
+        ('board_winning_backward_diagonal', 'X', True), ('board_winning_backward_diagonal', 'O', False),
+        ('board_partial_forward_diagonal', 'X', False), ('board_partial_forward_diagonal', 'O', False),
+        ('board_winning_forward_diagonal', 'X', True), ('board_winning_forward_diagonal', 'O', False),
+    ])
+    def test_check_victory(self, board_fixture, player, expected, request):
+        # Given
+        board = request.getfixturevalue(board_fixture)
+        nb_marks = 3
+
+        # When
+        result = board.check_victory(player, nb_marks)
+
+        # Then
+        assert result is expected
