@@ -4,18 +4,82 @@ from tictactoe.board import Board
 
 
 @pytest.fixture()
-def board_partially_filled():
+def board_empty():
+    return Board()
+
+
+@pytest.fixture()
+def board_draw():
+    board = Board()
+    board.cells = ['X', 'O', 'X', 'O', 'X', 'X', 'O', 'X', 'O']
+    return board
+
+
+@pytest.fixture()
+def board_partial_horizontal():
     board = Board()
     board.cells[0] = 'X'
-    board.cells[4] = 'O'
+    board.cells[1] = 'X'
+    return board
+
+
+@pytest.fixture()
+def board_winning_horizontal():
+    board = Board()
+    board.cells[0] = 'X'
+    board.cells[1] = 'X'
     board.cells[2] = 'X'
     return board
 
 
 @pytest.fixture()
-def board_totally_filled():
+def board_partial_vertical():
     board = Board()
-    board.cells = ['X', 'O', 'X', 'O', 'X', 'X', 'O', 'X', 'O']
+    board.cells[0] = 'X'
+    board.cells[3] = 'X'
+    return board
+
+
+@pytest.fixture()
+def board_winning_vertical():
+    board = Board()
+    board.cells[0] = 'X'
+    board.cells[3] = 'X'
+    board.cells[6] = 'X'
+    return board
+
+
+@pytest.fixture()
+def board_partial_backward_diagonal():
+    board = Board()
+    board.cells[0] = 'X'
+    board.cells[4] = 'X'
+    return board
+
+
+@pytest.fixture()
+def board_winning_backward_diagonal():
+    board = Board()
+    board.cells[0] = 'X'
+    board.cells[4] = 'X'
+    board.cells[8] = 'X'
+    return board
+
+
+@pytest.fixture()
+def board_partial_forward_diagonal():
+    board = Board()
+    board.cells[2] = 'X'
+    board.cells[4] = 'X'
+    return board
+
+
+@pytest.fixture()
+def board_winning_forward_diagonal():
+    board = Board()
+    board.cells[2] = 'X'
+    board.cells[4] = 'X'
+    board.cells[6] = 'X'
     return board
 
 
@@ -45,15 +109,15 @@ class TestBoardStr:
 -----+------+-----
 7:   | 8:   | 9:  '''
 
-    def test_str_3x3_partially_filled(self, board_partially_filled):
-        assert str(board_partially_filled) == '''1: X | 2:   | 3: X
+    def test_str_3x3_partially_filled(self, board_winning_horizontal):
+        assert str(board_winning_horizontal) == '''1: X | 2: X | 3: X
 -----+------+-----
-4:   | 5: O | 6:  
+4:   | 5:   | 6:  
 -----+------+-----
 7:   | 8:   | 9:  '''
 
-    def test_str_3x3_totally_filled(self, board_totally_filled):
-        assert str(board_totally_filled) == '''1: X | 2: O | 3: X
+    def test_str_3x3_totally_filled(self, board_draw):
+        assert str(board_draw) == '''1: X | 2: O | 3: X
 -----+------+-----
 4: O | 5: X | 6: X
 -----+------+-----
@@ -72,11 +136,11 @@ class TestIsFull:
     def test_is_full(self):
         assert Board().is_full() is False
 
-    def test_is_full_partially_filled(self, board_partially_filled):
-        assert board_partially_filled.is_full() is False
+    def test_is_full_partially_filled(self, board_winning_horizontal):
+        assert board_winning_horizontal.is_full() is False
 
-    def test_is_full_totally_filled(self, board_totally_filled):
-        assert board_totally_filled.is_full() is True
+    def test_is_full_totally_filled(self, board_draw):
+        assert board_draw.is_full() is True
 
 
 class TestPlaceChoice:
@@ -109,3 +173,75 @@ class TestPlaceChoice:
 
         # Then
         assert board.cells == expected_cells
+
+
+class TestNextCell:
+
+    @pytest.mark.parametrize('cell, add_x, add_y, expected', [
+        (1, 1, 0, 2), (1, 1, 1, 5), (1, 0, 1, 4), (2, -1, 1, 4),
+        (3, 1, 0, -1), (3, 1, 1, -1), (7, 0, 1, -1), (1, -1, 1, -1),
+    ])
+    def test_next_cell(self, board_empty, cell, add_x, add_y, expected):
+        # Given
+        board = board_empty
+
+        # When
+        cell = board.next_cell(cell, add_x, add_y)
+
+        # Then
+        assert cell == expected
+
+
+class TestHasMarkAt:
+
+    @pytest.mark.parametrize('cell, player, expected', [
+        (1, 'X', True), (1, 'O', False), (2, 'O', True), (0, 'O', False), (10, 'O', False)
+    ])
+    def test_marked_at(self, board_draw, cell, player, expected):
+        assert board_draw.has_mark_at(cell, player) is expected
+
+
+class TestCheckCells:
+
+    def test_nb_marks_0(self, board_empty):
+        assert board_empty.check_cells(1, 'X', add_x=1, add_y=1, nb_marks=0) is True
+
+    @pytest.mark.parametrize('add_x, add_y, expected', [(1, 0, False), (1, 1, False), (0, 1, False), (-1, 1, False)])
+    def test_board_empty(self, board_empty, add_x, add_y, expected):
+        assert board_empty.check_cells(1, 'X', add_x, add_y, nb_marks=3) is expected
+
+    @pytest.mark.parametrize('add_x, add_y, expected', [(1, 0, False), (1, 1, False), (0, 1, False), (-1, 1, False)])
+    def test_board_draw(self, board_draw, add_x, add_y, expected):
+        assert board_draw.check_cells(1, 'X', add_x, add_y, nb_marks=3) is expected
+
+    @pytest.mark.parametrize('add_x, add_y, expected', [(1, 0, False), (1, 1, False), (0, 1, False), (-1, 1, False)])
+    def test_partial_right(self, board_partial_horizontal, add_x, add_y, expected):
+        assert board_partial_horizontal.check_cells(1, 'X', add_x, add_y, nb_marks=3) is expected
+
+    @pytest.mark.parametrize('add_x, add_y, expected', [(1, 0, True), (1, 1, False), (0, 1, False), (-1, 1, False)])
+    def test_winning_right(self, board_winning_horizontal, add_x, add_y, expected):
+        assert board_winning_horizontal.check_cells(1, 'X', add_x, add_y, nb_marks=3) is expected
+
+    @pytest.mark.parametrize('add_x, add_y, expected', [(1, 0, False), (1, 1, False), (0, 1, False), (-1, 1, False)])
+    def test_partial_down_right(self, board_partial_backward_diagonal, add_x, add_y, expected):
+        assert board_partial_backward_diagonal.check_cells(1, 'X', add_x, add_y, nb_marks=3) is expected
+
+    @pytest.mark.parametrize('add_x, add_y, expected', [(1, 0, False), (1, 1, True), (0, 1, False), (-1, 1, False)])
+    def test_winning_down_right(self, board_winning_backward_diagonal, add_x, add_y, expected):
+        assert board_winning_backward_diagonal.check_cells(1, 'X', add_x, add_y, nb_marks=3) is expected
+
+    @pytest.mark.parametrize('add_x, add_y, expected', [(1, 0, False), (1, 1, False), (0, 1, False), (-1, 1, False)])
+    def test_partial_down(self, board_partial_vertical, add_x, add_y, expected):
+        assert board_partial_vertical.check_cells(1, 'X', add_x, add_y, nb_marks=3) is expected
+
+    @pytest.mark.parametrize('add_x, add_y, expected', [(1, 0, False), (1, 1, False), (0, 1, True), (-1, 1, False)])
+    def test_winning_down(self, board_winning_vertical, add_x, add_y, expected):
+        assert board_winning_vertical.check_cells(1, 'X', add_x, add_y, nb_marks=3) is expected
+
+    @pytest.mark.parametrize('add_x, add_y, expected', [(1, 0, False), (1, 1, False), (0, 1, False), (-1, 1, False)])
+    def test_partial_down_left(self, board_partial_forward_diagonal, add_x, add_y, expected):
+        assert board_partial_forward_diagonal.check_cells(3, 'X', add_x, add_y, nb_marks=3) is expected
+
+    @pytest.mark.parametrize('add_x, add_y, expected', [(1, 0, False), (1, 1, False), (0, 1, False), (-1, 1, True)])
+    def test_winning_down_left(self, board_winning_forward_diagonal, add_x, add_y, expected):
+        assert board_winning_forward_diagonal.check_cells(3, 'X', add_x, add_y, nb_marks=3) is expected

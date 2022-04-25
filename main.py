@@ -19,7 +19,7 @@ def clear_output() -> None:
     """
 
 
-# Done
+# Done -> Board.__init__
 def init_board(width: int = BOARD_WIDTH, height: int = BOARD_HEIGHT) -> Board:
     """
     Initializes a new board with empty cells
@@ -31,7 +31,7 @@ def init_board(width: int = BOARD_WIDTH, height: int = BOARD_HEIGHT) -> Board:
     return [' '] * (width * height)
 
 
-# Done -> __str__
+# Done -> Board.__str__
 def display(board: Board, width: int = BOARD_WIDTH, height: int = BOARD_HEIGHT) -> None:
     """
     Display the board with cell numbers counted from 1 = top left to (board size) = bottom left.
@@ -88,6 +88,7 @@ def get_player_choice(board: Board, player: str) -> int:
     return int(choice)
 
 
+# Done -> Board.place_choice
 def place_choice(board: Board, cell: int, player: str) -> None:
     """
     Place given player's choice on board
@@ -216,7 +217,7 @@ def next_player(player: str, players: List[str]) -> str:
     return players[idx]
 
 
-# Done -> board.is_full()
+# Done -> Board.is_full()
 def is_board_full(board: Board) -> bool:
     """
     Checks whether board is full, i.e. no more marker can be added.

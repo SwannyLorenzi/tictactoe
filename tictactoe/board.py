@@ -34,7 +34,7 @@ class Board:
 
     def place_choice(self, cell: int, player: str) -> None:
         """
-        Place given player's choice on board
+        Place given player's choice on board.
 
         :param cell: Cell number (1 = top left, board size = bottom right)
         :param player: Player marker
@@ -43,3 +43,52 @@ class Board:
             return None
 
         self.cells[cell - 1] = player
+
+    def next_cell(self, cell: int, add_x: int, add_y: int) -> int:
+        """
+        Get next cell index for given cell and x, y direction.
+
+        :param cell: Cell to move from
+        :param add_x: x offset to add
+        :param add_y: y offset to add
+        :return: Next cell index for given direction, -1 if move gets out of board.
+        """
+        cell_id = cell - 1
+        x = (cell_id % self.width) + add_x
+        y = (cell_id // self.width) + add_y
+        if x < 0 or x > self.width - 1 or y < 0 or y > self.height - 1:
+            # Board overflow
+            return -1
+        else:
+            return 1 + x + y * self.width
+
+    def has_mark_at(self, cell: int, player: str) -> bool:
+        """
+        Check if player has marked given cell on board
+
+        :param cell: Cell index (0 based)
+        :param player: Player marker
+        :return: True if player has marked corresponding cell
+        or False if not or if index is out of board
+        """
+        return 0 < cell <= len(self.cells) and self.cells[cell - 1] == player
+
+        pass
+
+    def check_cells(self, cell: int, player: str, add_x: int, add_y: int, nb_marks: int) -> bool:
+        """
+        Check if player marked cells at given position, into add_x/add_y direction, up to nb_marks.
+
+        :param cell: Starting cell position on board
+        :param player: Player marker to look for
+        :param add_x: Offset to add to x coordinate
+        :param add_y: Offset to add to y coordinate
+        :param nb_marks: Number of player markers to find to return true
+        :return: True if player has marked nb_marks consecutive cells on board in given direction starting from cell position
+        False otherwise
+        """
+        if nb_marks == 0:
+            return True
+
+        next_cell = self.next_cell(cell, add_x, add_y)
+        return self.has_mark_at(cell, player) and self.check_cells(next_cell, player, add_x, add_y, nb_marks - 1)
