@@ -23,3 +23,11 @@ class Board:
                 index += 1
             rows.append(' | '.join(cells))
         return row_sep.join(rows)
+
+    def is_full(self) -> bool:
+        """
+        Checks whether board is full, i.e. no more marker can be added.
+
+        :return: True if no more marker can be added. False otherwise
+        """
+        return ' ' not in self.cells

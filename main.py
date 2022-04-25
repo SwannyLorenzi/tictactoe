@@ -18,6 +18,7 @@ def clear_output() -> None:
     Does nothing here, replaces Jupyter notebook's cleat_output() to maintain code as is.
     """
 
+
 # Done
 def init_board(width: int = BOARD_WIDTH, height: int = BOARD_HEIGHT) -> Board:
     """
@@ -30,6 +31,7 @@ def init_board(width: int = BOARD_WIDTH, height: int = BOARD_HEIGHT) -> Board:
     return [' '] * (width * height)
 
 
+# Done -> __str__
 def display(board: Board, width: int = BOARD_WIDTH, height: int = BOARD_HEIGHT) -> None:
     """
     Display the board with cell numbers counted from 1 = top left to (board size) = bottom left.
@@ -214,6 +216,7 @@ def next_player(player: str, players: List[str]) -> str:
     return players[idx]
 
 
+# Done -> board.is_full()
 def is_board_full(board: Board) -> bool:
     """
     Checks whether board is full, i.e. no more marker can be added.
