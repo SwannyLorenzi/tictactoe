@@ -18,7 +18,7 @@ def clear_output() -> None:
     Does nothing here, replaces Jupyter notebook's cleat_output() to maintain code as is.
     """
 
-
+# Done
 def init_board(width: int = BOARD_WIDTH, height: int = BOARD_HEIGHT) -> Board:
     """
     Initializes a new board with empty cells
