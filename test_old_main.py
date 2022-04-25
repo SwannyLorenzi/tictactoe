@@ -1,6 +1,6 @@
 import pytest
 
-from main import *
+from old_main import *
 
 
 @pytest.mark.parametrize("idx,expected", [(0, (1, 1)), (1, (2, 1)), (3, (1, 2))])

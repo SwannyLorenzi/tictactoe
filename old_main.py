@@ -19,7 +19,6 @@ def clear_output() -> None:
     """
 
 
-# Done -> Board.__init__
 def init_board(width: int = BOARD_WIDTH, height: int = BOARD_HEIGHT) -> Board:
     """
     Initializes a new board with empty cells
@@ -31,7 +30,6 @@ def init_board(width: int = BOARD_WIDTH, height: int = BOARD_HEIGHT) -> Board:
     return [' '] * (width * height)
 
 
-# Done -> Board.__str__
 def display(board: Board, width: int = BOARD_WIDTH, height: int = BOARD_HEIGHT) -> None:
     """
     Display the board with cell numbers counted from 1 = top left to (board size) = bottom left.
@@ -88,7 +86,6 @@ def get_player_choice(board: Board, player: str) -> int:
     return int(choice)
 
 
-# Done -> Board.place_choice
 def place_choice(board: Board, cell: int, player: str) -> None:
     """
     Place given player's choice on board
@@ -102,7 +99,7 @@ def place_choice(board: Board, cell: int, player: str) -> None:
 
     board[cell - 1] = player
 
-# Done
+
 def get_xy(cell: int, width: int = BOARD_WIDTH) -> Tuple[int, int]:
     """
     Get x,y coordinates for given cell index
@@ -117,7 +114,7 @@ def get_xy(cell: int, width: int = BOARD_WIDTH) -> Tuple[int, int]:
     y = (cell // width) + 1
     return x, y
 
-# Deprecated
+
 def get_idx(x: int, y: int, width: int = BOARD_WIDTH) -> int:
     """
     Get a cell index from (x, y) coordinates
@@ -131,7 +128,7 @@ def get_idx(x: int, y: int, width: int = BOARD_WIDTH) -> int:
     """
     return (x - 1) + (y - 1) * width
 
-# Done
+
 def has_idx(player: str, board: Board, idx: int) -> bool:
     """
     Check if player has marked cell index on bard
@@ -144,7 +141,7 @@ def has_idx(player: str, board: Board, idx: int) -> bool:
     """
     return 0 <= idx < len(board) and board[idx] == player
 
-# Done
+
 def check_cells(player: str, board: Board, idx: int,
                 add_x: int = 0, add_y: int = 0, nb_marks: int = BOARD_WIN_SIZE,
                 width: int = BOARD_WIDTH,
@@ -176,7 +173,7 @@ def check_cells(player: str, board: Board, idx: int,
 
     return has_idx(player, board, idx) and check_cells(player, board, next_idx, add_x, add_y, nb_marks - 1)
 
-# Done
+
 def check_win(player: str, board: Board, win_size: int = BOARD_WIN_SIZE) -> bool:
     """
     Check for player victory in given board
@@ -217,7 +214,6 @@ def next_player(player: str, players: List[str]) -> str:
     return players[idx]
 
 
-# Done -> Board.is_full()
 def is_board_full(board: Board) -> bool:
     """
     Checks whether board is full, i.e. no more marker can be added.
@@ -257,6 +253,5 @@ def tictactoe() -> None:
         print("It's a draw!")
 
 
-# Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     tictactoe()
