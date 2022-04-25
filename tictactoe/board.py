@@ -31,3 +31,15 @@ class Board:
         :return: True if no more marker can be added. False otherwise
         """
         return ' ' not in self.cells
+
+    def place_choice(self, cell: int, player: str) -> None:
+        """
+        Place given player's choice on board
+
+        :param cell: Cell number (1 = top left, board size = bottom right)
+        :param player: Player marker
+        """
+        if not 1 <= cell <= len(self.cells):
+            return None
+
+        self.cells[cell - 1] = player

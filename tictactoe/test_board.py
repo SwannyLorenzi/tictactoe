@@ -67,7 +67,7 @@ class TestBoardStr:
  9:   | 10:   | 11:   | 12:  '''
 
 
-class TestBoardIsFull:
+class TestIsFull:
 
     def test_is_full(self):
         assert Board().is_full() is False
@@ -77,3 +77,35 @@ class TestBoardIsFull:
 
     def test_is_full_totally_filled(self, board_totally_filled):
         assert board_totally_filled.is_full() is True
+
+
+class TestPlaceChoice:
+
+    def test_place_choice_on_board(self):
+        # Given
+        board = Board()
+        cell = 1
+        player = 'X'
+
+        expected_cells = [*board.cells]
+        expected_cells[cell - 1] = player
+
+        # When
+        board.place_choice(cell, player)
+
+        # Then
+        assert board.cells == expected_cells
+
+    @pytest.mark.parametrize('cell', [0, 10, -1])
+    def test_place_choice_outside_board(self, cell):
+        # Given
+        board = Board()
+        player = 'X'
+
+        expected_cells = [*board.cells]
+
+        # When
+        board.place_choice(cell, player)
+
+        # Then
+        assert board.cells == expected_cells
